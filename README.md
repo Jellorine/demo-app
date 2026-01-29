@@ -1,4 +1,4 @@
-# Children's Wonderland Dashboard
+# Kids Corner Dashboard
 
 A responsive Next.js dashboard built with TypeScript and Material UI.
 
