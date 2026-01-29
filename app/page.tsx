@@ -11,10 +11,16 @@ import {
   Skeleton,
 } from "@mui/material";
 import { ChildProduct } from "@/types/product";
+import Popup from "@/components/Popup";
 
 export default function Home() {
   const [products, setProducts] = useState<ChildProduct[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailProduct, setDetailProduct] = useState<ChildProduct | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/tiles")
@@ -24,6 +30,18 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  const handleCardClick = async (id: string) => {
+    setSelectedId(id);
+    setModalOpen(true);
+    setDetailLoading(true);
+
+    const res = await fetch(`/api/tiles/${id}`);
+    const data = await res.json();
+
+    setDetailProduct(data);
+    setDetailLoading(false);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -54,6 +72,7 @@ export default function Home() {
                     cursor: "pointer",
                     "&:hover": { boxShadow: 6 },
                   }}
+                  onClick={() => handleCardClick(product.id)}
                 >
                   <CardMedia
                     component="img"
@@ -79,6 +98,13 @@ export default function Home() {
               </Grid>
             ))}
       </Grid>
+
+      <Popup
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        product={detailProduct}
+        loading={detailLoading}
+      />
     </Container>
   );
 }
